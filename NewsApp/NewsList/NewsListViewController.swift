@@ -12,6 +12,8 @@ class NewsListViewController: UIViewController {
     private var coordinator: Coordinator?
     private var newsListViewModel: NewsListViewModel
 
+    var newsListView: NewsListView?
+
     init(coordinator: Coordinator, newsListViewModel: NewsListViewModel) {
         self.coordinator = coordinator
         self.newsListViewModel = newsListViewModel
@@ -22,22 +24,24 @@ class NewsListViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func loadView() {
+        let newsListView = NewsListView()
+
+        self.newsListView = newsListView
+        self.view = newsListView
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
-        button.center = view.center
-        button.backgroundColor = .systemBlue
-        button.setTitle("Go to detail view", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(pressed), for: .touchUpInside)
-        view.addSubview(button)
-
-        view.backgroundColor = .red
-    }
-
-    @objc func pressed() {
-        coordinator?.moveToDetail()
+        newsListViewModel.fetchData(completion: { [weak self] data in
+            switch data {
+            case .failure(let error):
+                print(error)
+            case .success(let data):
+                print(data)
+            }
+        })
     }
 }

@@ -14,6 +14,9 @@ protocol Factory {
 
 //// replace the DependencyContainer for tests
 class DependencyFactory: Factory {
+
+    var networkManager: NetworkManagerProtocol = NetworkManager()
+
     func makeInitialCoordinator() -> AppCoordinator {
         let coordinator = AppCoordinator(factory: self)
         return coordinator
@@ -27,7 +30,7 @@ class DependencyFactory: Factory {
     }
 
     func makeNewsListViewModel(coordinator: Coordinator) -> NewsListViewModel {
-        let newsListViewModel = NewsListViewModel()
+        let newsListViewModel = NewsListViewModel(networkManager: networkManager)
         return newsListViewModel
     }
 }

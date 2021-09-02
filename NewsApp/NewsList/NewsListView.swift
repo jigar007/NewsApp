@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class InitialView: UIView {
+final class NewsListView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -19,6 +19,6 @@ final class InitialView: UIView {
     }
 
     private func setup() {
+        backgroundColor = .red
     }
-
 }
