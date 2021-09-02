@@ -16,6 +16,7 @@
 		2828512826E0CD3A0093D913 /* NewsAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2828512726E0CD3A0093D913 /* NewsAppUITests.swift */; };
 		2828513626E0DAEF0093D913 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2828513526E0DAEF0093D913 /* AppCoordinator.swift */; };
 		2828513926E0DB590093D913 /* DependencyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2828513826E0DB590093D913 /* DependencyFactory.swift */; };
+		2828518626E0E5D90093D913 /* NewsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2828518326E0E5D90093D913 /* NewsDetailViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		2828512926E0CD3A0093D913 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2828513526E0DAEF0093D913 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		2828513826E0DB590093D913 /* DependencyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyFactory.swift; sourceTree = "<group>"; };
+		2828518326E0E5D90093D913 /* NewsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 				2828513A26E0DB610093D913 /* Factory */,
 				2828513726E0DAF60093D913 /* Coordinator */,
 				2828513B26E0DC610093D913 /* NewsList */,
+				2828518826E0E5FB0093D913 /* NewDetail */,
 				2828513F26E0DCFD0093D913 /* SupportingFiles */,
 			);
 			path = NewsApp;
@@ -169,6 +172,14 @@
 				2828510726E0CD390093D913 /* SceneDelegate.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		2828518826E0E5FB0093D913 /* NewDetail */ = {
+			isa = PBXGroup;
+			children = (
+				2828518326E0E5D90093D913 /* NewsDetailViewController.swift */,
+			);
+			path = NewDetail;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -303,6 +314,7 @@
 				2828510A26E0CD390093D913 /* NewsListViewController.swift in Sources */,
 				2828510626E0CD390093D913 /* AppDelegate.swift in Sources */,
 				2828513626E0DAEF0093D913 /* AppCoordinator.swift in Sources */,
+				2828518626E0E5D90093D913 /* NewsDetailViewController.swift in Sources */,
 				2828510826E0CD390093D913 /* SceneDelegate.swift in Sources */,
 				2828513926E0DB590093D913 /* DependencyFactory.swift in Sources */,
 			);

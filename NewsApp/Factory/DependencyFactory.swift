@@ -19,6 +19,7 @@ class DependencyFactory: Factory {
     }
 
     func makeNewsListViewController(coordinator: AppCoordinator) -> NewsListViewController {
-        return NewsListViewController()
+        let initialViewController = NewsListViewController(coordinator: coordinator)
+        return initialViewController
     }
 }

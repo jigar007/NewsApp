@@ -32,6 +32,7 @@ class AppCoordinator: Coordinator {
 
     /// Move to the NewsDetailView
     func moveToDetail() {
-
+        let vc = NewsDetailViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
