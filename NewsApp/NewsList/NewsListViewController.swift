@@ -10,9 +10,11 @@ import UIKit
 class NewsListViewController: UIViewController {
 
     private var coordinator: Coordinator?
+    private var newsListViewModel: NewsListViewModel
 
-    init(coordinator: Coordinator) {
+    init(coordinator: Coordinator, newsListViewModel: NewsListViewModel) {
         self.coordinator = coordinator
+        self.newsListViewModel = newsListViewModel
         super.init(nibName: nil, bundle: nil)
     }
 

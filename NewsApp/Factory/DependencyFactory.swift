@@ -9,6 +9,7 @@ import Foundation
 
 protocol Factory {
     func makeNewsListViewController(coordinator: AppCoordinator) -> NewsListViewController
+    func makeNewsListViewModel(coordinator: Coordinator) -> NewsListViewModel
 }
 
 //// replace the DependencyContainer for tests
@@ -19,7 +20,14 @@ class DependencyFactory: Factory {
     }
 
     func makeNewsListViewController(coordinator: AppCoordinator) -> NewsListViewController {
-        let initialViewController = NewsListViewController(coordinator: coordinator)
-        return initialViewController
+        let newsListViewModel = makeNewsListViewModel(coordinator: coordinator)
+        let newsViewController = NewsListViewController(coordinator: coordinator,
+                                                        newsListViewModel: newsListViewModel)
+        return newsViewController
+    }
+
+    func makeNewsListViewModel(coordinator: Coordinator) -> NewsListViewModel {
+        let newsListViewModel = NewsListViewModel()
+        return newsListViewModel
     }
 }
