@@ -15,27 +15,15 @@ final class NewsListViewModel {
         self.networkManager = networkManager
     }
 
-    func fetchData(completion: @escaping (Result<[News], Error>) -> Void) {
+    func fetchNews(completion: @escaping (Result<[News], APIError>) -> Void) {
 
-        let urlString = "\(Contants.baseUrlString)\(Contants.AUTopHeadline)&apikey=\(APIKey.key)"
-        guard let url = URL(string: urlString) else {
-            return
-        }
-
-        networkManager?.get(url: url, completionBlock: { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .failure(let error):
-                    completion(.failure(error))
-                case .success(let data):
-                    do {
-                        let newsEnvelope = try JSONDecoder.customeDecoder.decode(NewsEnvelope.self, from: data)
-                        completion(.success(newsEnvelope.articles))
-                    } catch {
-                        completion(.failure(error))
-                    }
-                }
+        networkManager?.fetchNewsEnvelope{ response in
+            switch response {
+            case .success(let newEnvelope):
+                completion(.success(newEnvelope.articles))
+            case .failure(let error):
+                completion(.failure(error))
             }
-        })
+        }
     }
 }

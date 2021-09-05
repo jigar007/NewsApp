@@ -35,7 +35,7 @@ class NewsListViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
-        newsListViewModel.fetchData(completion: { [weak self] data in
+        newsListViewModel.fetchNews(completion: { [weak self] data in
             switch data {
             case .failure(let error):
                 print(error)

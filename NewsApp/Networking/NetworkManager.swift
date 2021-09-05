@@ -8,19 +8,28 @@
 import Foundation
 
 protocol NetworkManagerProtocol {
-    func get(url: URL, completionBlock: @escaping (Result<Data, Error>) -> Void)
+    func fetchNewsEnvelope(completion: @escaping (Result<NewsEnvelope, APIError>) -> Void)
 }
 
-class NetworkManager: NetworkManagerProtocol {
+struct NetworkManager: NetworkManagerProtocol {
 
-    public func get(url: URL, completionBlock: @escaping (Result<Data, Error>) -> Void) {
+    private let httpManager = HTTPManager()
 
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard error == nil, let data = data else {
-                completionBlock(.failure(error!))
-                return
+    func fetchNewsEnvelope(completion: @escaping (Result<NewsEnvelope, APIError>) -> Void) {
+        let urlString = "\(Contants.baseUrlString)\(Contants.AUTopHeadline)&apikey=\(APIKey.key)"
+
+        httpManager.getDataFor(urlString: urlString) { response in
+            switch response {
+            case  .success(let data):
+                do {
+                    let newsEnvelope = try JSONDecoder.customeDecoder.decode(NewsEnvelope.self, from: data)
+                    completion(.success(newsEnvelope))
+                } catch {
+                    completion(.failure(.dataNotDecoded))
+                }
+            case .failure(let error):
+                completion(.failure(error))
             }
-            completionBlock(.success(data))
-        }.resume()
+        }
     }
 }
