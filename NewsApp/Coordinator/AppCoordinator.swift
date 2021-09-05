@@ -10,7 +10,7 @@ import UIKit
 
 protocol Coordinator: AnyObject {
     func start(_ navigationController: UINavigationController)
-    func moveToDetail()
+    func moveToDetail(with news: News)
 }
 
 class AppCoordinator: Coordinator {
@@ -31,8 +31,8 @@ class AppCoordinator: Coordinator {
     }
 
     /// Move to the NewsDetailView
-    func moveToDetail() {
-        let vc = NewsDetailViewController()
+    func moveToDetail(with news: News) {
+        let vc = NewsDetailViewController(news: news)
         navigationController?.pushViewController(vc, animated: true)
     }
 }

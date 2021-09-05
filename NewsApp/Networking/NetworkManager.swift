@@ -16,7 +16,8 @@ struct NetworkManager: NetworkManagerProtocol {
     private let httpManager = HTTPManager()
 
     func fetchNewsEnvelope(completion: @escaping (Result<NewsEnvelope, APIError>) -> Void) {
-        let urlString = "\(Contants.baseUrlString)\(Contants.AUTopHeadline)&apikey=\(APIKey.key)"
+
+        let urlString = "\(Contants.baseUrlString)\(Contants.AUTopHeadline)&apikey=\(APIKey.key)&pageSize=10"
 
         httpManager.getDataFor(urlString: urlString) { response in
             switch response {
