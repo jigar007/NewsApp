@@ -12,8 +12,13 @@ class NewsListViewController: UIViewController {
     private var coordinator: Coordinator
     private var newsListViewModel: NewsListViewModel
 
+    private let pageLimit = 10
+    private var currentPageId: Int = 1
+
     fileprivate var newsTableViewCellViewModels = [NewsTableViewCellViewModel]()
     fileprivate var newsList = [News]()
+    fileprivate var shouldFetchMoreNews = true
+    private let refreshControl = UIRefreshControl()
 
     private let tableView: UITableView = {
         let table = UITableView()
@@ -21,8 +26,6 @@ class NewsListViewController: UIViewController {
                        forCellReuseIdentifier: NewsTableViewCell.identifier)
         return table
     }()
-
-    private let refreshControl = UIRefreshControl()
 
     init(coordinator: Coordinator, newsListViewModel: NewsListViewModel) {
         self.coordinator = coordinator
@@ -53,7 +56,6 @@ class NewsListViewController: UIViewController {
         // Add pull to refresh
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
-
         tableView.addSubview(refreshControl)
 
         fetchNews()
@@ -63,26 +65,31 @@ class NewsListViewController: UIViewController {
         fetchNews()
     }
 
-
     private func fetchNews(){
-        newsListViewModel.fetchNews { [weak self] data in
+        newsListViewModel.fetchNews(perPage: pageLimit, sinceId: currentPageId) { [weak self] data in
             guard let self = self else {
                 return
             }
             switch data {
             case .success(let news):
-                self.newsList = news
-                self.newsTableViewCellViewModels = news.compactMap({
+                self.newsList.append(contentsOf: news)
+                let newsTableViewCellViewModel = news.compactMap({
                     NewsTableViewCellViewModel(
                         title: $0.title,
                         subtitle: $0.description ?? "Description not avilable",
-                        imageURL: URL(string: $0.urlToImage ?? "")
+                        imageURL: $0.urlToImage
                     )
                 })
 
+                self.newsTableViewCellViewModels.append(contentsOf: newsTableViewCellViewModel)
+
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
+                    self.tableView.tableFooterView = nil
                     self.refreshControl.endRefreshing()
+
+                    // Reset it back, so next time on scroll it can fetch more news
+                    self.shouldFetchMoreNews = true
                 }
             case .failure(let error):
                 self.showAlert(withError: error)
@@ -95,6 +102,20 @@ class NewsListViewController: UIViewController {
         let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
+    }
+
+    private func createSpinenrFooter() -> UIView {
+        let footerView = UIView(frame: CGRect(x: 0,
+                                              y: 0,
+                                              width: view.frame.size.width,
+                                              height: 100))
+
+        let spinner = UIActivityIndicatorView()
+        spinner.center = footerView.center
+        footerView.addSubview(spinner)
+        spinner.startAnimating()
+
+        return footerView
     }
 }
 
@@ -124,5 +145,26 @@ extension NewsListViewController: UITableViewDelegate {
 
         let news = newsList[indexPath.row]
         coordinator.moveToDetail(with: news)
+    }
+}
+
+extension NewsListViewController: UIScrollViewDelegate {
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+
+        if offsetY > contentHeight - scrollView.frame.height {
+
+            guard shouldFetchMoreNews else {
+                return
+            }
+            self.tableView.tableFooterView = createSpinenrFooter()
+
+            self.currentPageId = self.currentPageId + 1
+            shouldFetchMoreNews = false
+            fetchNews()
+        }
     }
 }

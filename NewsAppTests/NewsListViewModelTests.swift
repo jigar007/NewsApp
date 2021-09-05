@@ -17,7 +17,7 @@ class NewsListViewModelTests: XCTestCase {
         let expectation = self.expectation(description: "ValidRequest_Returns_NewsEnvelope_Response")
 
         // ACT
-        newListVM.fetchNews { response in
+        newListVM.fetchNews(perPage: 10, sinceId: 1) { response in
             switch response {
             case .success(let news):
                 XCTAssertNotNil(news)

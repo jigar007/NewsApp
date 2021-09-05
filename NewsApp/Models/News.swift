@@ -11,9 +11,9 @@ struct News: Decodable {
     let author: String?
     let title: String
     let description: String?
-    let urlToImage: String?
+    let url: URL?
+    let urlToImage: URL?
     let publishedAt: Date?
-    let url: String?
     let content: String?
 }
 

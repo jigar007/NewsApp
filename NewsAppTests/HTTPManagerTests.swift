@@ -14,11 +14,20 @@ class HTTPManagerTests: XCTestCase {
 
         // ARRANGE
         let httpManager = HTTPManager()
-        let urlString = "\(Contants.baseUrlString)\(Contants.AUTopHeadline)&apikey=\(APIKey.key)"
+
+        var components = URLComponents(string: "\(Contants.baseUrlString)\(Contants.topHeadline)")!
+        components.queryItems = [
+            URLQueryItem(name: "apikey", value: "\(APIKey.key)"),
+            URLQueryItem(name: "country", value: "au")
+        ]
+        guard let url = components.url else {
+            return
+        }
+
         let expectation = self.expectation(description: "ValidRequest_Returns_Data_Response")
 
         // ACT
-        httpManager.getDataFor(urlString: urlString) { response in
+        httpManager.getDataFor(url: url) { response in
             switch response {
             case .success(let value):
                 XCTAssertNotNil(value)
@@ -36,12 +45,14 @@ class HTTPManagerTests: XCTestCase {
 
         // ARRANGE
         let httpManager = HTTPManager()
-        let urlString = "\(Contants.baseUrlString)\(Contants.AUTopHeadline)"
+        guard let url = URL(string: "\(Contants.baseUrlString)\(Contants.topHeadline)") else {
+            return
+        }
 
         let expectation = self.expectation(description: "InRequest_Returns_Invalid_Response")
 
         // ACT
-        httpManager.getDataFor(urlString: urlString) { response in
+        httpManager.getDataFor(url: url) { response in
             switch response {
             case .success(let value):
                 XCTAssertNil(value)

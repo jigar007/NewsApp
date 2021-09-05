@@ -80,6 +80,8 @@ class NewsTableViewCell: UITableViewCell {
         newsTitleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.subtitle
 
+        //TODO: This method needs to move to network layer
+
         // Image
         if let data = viewModel.imageData {
             newsImageView.image = UIImage(data: data)

@@ -13,5 +13,5 @@ struct APIKey {
 
 struct Contants {
     static let baseUrlString = "https://newsapi.org/v2/"
-    static let AUTopHeadline = "top-headlines?country=au"
+    static let topHeadline = "top-headlines"
 }

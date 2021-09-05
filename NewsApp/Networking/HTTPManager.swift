@@ -8,7 +8,7 @@
 import Foundation
 
 protocol HTTPManagerProtocol {
-    func getDataFor(urlString: String, completion: @escaping (Result<Data, APIError>) -> Void)
+    func getDataFor(url: URL, completion: @escaping (Result<Data, APIError>) -> Void)
 }
 
 enum HTTPResponseResult<APIError> {
@@ -37,11 +37,7 @@ struct HTTPManager: HTTPManagerProtocol {
 
     let session = URLSession.shared
 
-    public func getDataFor(urlString: String, completion: @escaping (Result<Data, APIError>) -> Void) {
-
-        guard let url = URL(string: urlString) else {
-            return completion(.failure(.invalidURL))
-        }
+    public func getDataFor(url: URL, completion: @escaping (Result<Data, APIError>) -> Void) {
 
         let dataTask = session.dataTask(with: url) { (data, urlResponse, error) in
             guard error == nil else {

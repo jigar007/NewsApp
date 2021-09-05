@@ -16,7 +16,7 @@ class NetworkManagerTests: XCTestCase {
         let expectation = self.expectation(description: "ValidRequest_Returns_NewsEnvelope_Response")
 
         // ACT
-        networkManager.fetchNewsEnvelope { response in
+        networkManager.fetchNewsEnvelope(perPage: 10, sinceId: 1) { response in
             switch response {
             case .success(let newsEnvelope):
                 XCTAssertNotNil(newsEnvelope)
