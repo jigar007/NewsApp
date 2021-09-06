@@ -18,19 +18,23 @@ class DependencyFactory: Factory {
     var networkManager: NetworkManagerProtocol = NetworkManager()
 
     func makeInitialCoordinator() -> AppCoordinator {
-        let coordinator = AppCoordinator(factory: self)
-        return coordinator
+        AppCoordinator(factory: self)
     }
 
     func makeNewsListViewController(coordinator: AppCoordinator) -> NewsListViewController {
         let newsListViewModel = makeNewsListViewModel(coordinator: coordinator)
+        let newsTableViewCellViewModel = makeNewsTableViewCellViewModel(coordinator: coordinator)
         let newsViewController = NewsListViewController(coordinator: coordinator,
-                                                        newsListViewModel: newsListViewModel)
+                                                        newsListViewModel: newsListViewModel,
+                                                        newsTableViewCellViewModel: newsTableViewCellViewModel)
         return newsViewController
     }
 
     func makeNewsListViewModel(coordinator: Coordinator) -> NewsListViewModel {
-        let newsListViewModel = NewsListViewModel(networkManager: networkManager)
-        return newsListViewModel
+       NewsListViewModel(networkManager: networkManager)
+    }
+    
+    func makeNewsTableViewCellViewModel(coordinator: Coordinator) -> NewsTableViewCellViewModel {
+        NewsTableViewCellViewModel(networkManager: networkManager)
     }
 }

@@ -13,14 +13,14 @@ class NewsTableViewCell: UITableViewCell {
     private let newsTitleLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 22, weight: .semibold)
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
         return label
     }()
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.font = .systemFont(ofSize: 17, weight: .light)
+        label.font = .systemFont(ofSize: 13, weight: .light)
         return label
     }()
 
@@ -74,29 +74,33 @@ class NewsTableViewCell: UITableViewCell {
         newsTitleLabel.text = nil
         subtitleLabel.text = nil
         newsImageView.image = nil
+        newsImageView.isHidden = false
     }
 
-    func configure(with viewModel: NewsTableViewCellViewModel) {
+    func configure(with viewModel: NewsTableViewCellModel, newsTableViewCellViewModel: NewsTableViewCellViewModel) {
         newsTitleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.subtitle
 
         //TODO: This method needs to move to network layer
 
         // Image
-        if let data = viewModel.imageData {
-            newsImageView.image = UIImage(data: data)
+        if let image = viewModel.imageData {
+            newsImageView.image = image
         }
         else if let url = viewModel.imageURL {
-            //fetch
-            URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-                guard let data = data, error == nil else {
-                    return
+            newsTableViewCellViewModel.fetchImage(withURL: url) { [weak self] response in
+                switch response{
+                case .success(let imageData):
+                    viewModel.imageData = imageData
+                case.failure:
+                    DispatchQueue.main.async {
+                        self?.newsImageView.isHidden = true
+                    }
                 }
-                viewModel.imageData = data
-                DispatchQueue.main.async {
-                    self?.newsImageView.image = UIImage(data: data)
-                }
-            }.resume()
+            }
+
+        } else {
+            newsImageView.isHidden = true
         }
     }
 }

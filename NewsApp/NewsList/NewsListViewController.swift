@@ -9,16 +9,18 @@ import UIKit
 
 class NewsListViewController: UIViewController {
 
-    private var coordinator: Coordinator
-    private var newsListViewModel: NewsListViewModel
-
-    private let pageLimit = 10
-    private var currentPageId: Int = 1
-
-    fileprivate var newsTableViewCellViewModels = [NewsTableViewCellViewModel]()
+    fileprivate var newsTableViewCellViewModels = [NewsTableViewCellModel]()
     fileprivate var newsList = [News]()
     fileprivate var shouldFetchMoreNews = true
+
+    private var coordinator: Coordinator
+    private var newsListViewModel: NewsListViewModel
+    private var newsTableViewCellViewModel: NewsTableViewCellViewModel
+    private var currentPageId: Int = 1
+
+    private let pageLimit = 10
     private let refreshControl = UIRefreshControl()
+    private let spinner = UIActivityIndicatorView()
 
     private let tableView: UITableView = {
         let table = UITableView()
@@ -27,9 +29,12 @@ class NewsListViewController: UIViewController {
         return table
     }()
 
-    init(coordinator: Coordinator, newsListViewModel: NewsListViewModel) {
+    init(coordinator: Coordinator,
+         newsListViewModel: NewsListViewModel,
+         newsTableViewCellViewModel: NewsTableViewCellViewModel) {
         self.coordinator = coordinator
         self.newsListViewModel = newsListViewModel
+        self.newsTableViewCellViewModel = newsTableViewCellViewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -45,7 +50,10 @@ class NewsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "🦘 News"
+        let label = UILabel()
+        label.text = "🇦🇺 News"
+        label.font = .systemFont(ofSize: 30, weight: .bold)
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem.init(customView: label)
         view.backgroundColor = .systemBackground
 
         // Add tableview to view
@@ -58,6 +66,9 @@ class NewsListViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
         tableView.addSubview(refreshControl)
 
+        spinner.center = view.center
+        spinner.startAnimating()
+        view.addSubview(spinner)
         fetchNews()
     }
 
@@ -66,28 +77,35 @@ class NewsListViewController: UIViewController {
     }
 
     private func fetchNews(){
+
         newsListViewModel.fetchNews(perPage: pageLimit, sinceId: currentPageId) { [weak self] data in
             guard let self = self else {
                 return
             }
             switch data {
             case .success(let news):
-                self.newsList.append(contentsOf: news)
-                let newsTableViewCellViewModel = news.compactMap({
-                    NewsTableViewCellViewModel(
-                        title: $0.title,
-                        subtitle: $0.description ?? "Description not avilable",
-                        imageURL: $0.urlToImage
-                    )
-                })
-
-                self.newsTableViewCellViewModels.append(contentsOf: newsTableViewCellViewModel)
-
                 DispatchQueue.main.async {
+
+                    guard !news.isEmpty else {
+                        // Need to display end of the news articles
+                        self.tableView.tableFooterView = self.createFooterForEndofNews()
+                        return
+                    }
+
+                    self.newsList.append(contentsOf: news)
+                    let newsTableViewCellViewModel = news.compactMap({
+                        NewsTableViewCellModel(
+                            title: $0.title,
+                            subtitle: $0.description ?? "Description not avilable",
+                            imageURL: $0.urlToImage
+                        )
+                    })
+
+                    self.newsTableViewCellViewModels.append(contentsOf: newsTableViewCellViewModel)
                     self.tableView.reloadData()
                     self.tableView.tableFooterView = nil
                     self.refreshControl.endRefreshing()
-
+                    self.spinner.stopAnimating()
                     // Reset it back, so next time on scroll it can fetch more news
                     self.shouldFetchMoreNews = true
                 }
@@ -117,6 +135,20 @@ class NewsListViewController: UIViewController {
 
         return footerView
     }
+
+    private func createFooterForEndofNews() -> UIView {
+        let footerView = UIView(frame: CGRect(x: 0,
+                                              y: 0,
+                                              width: view.frame.size.width,
+                                              height: 100))
+
+        let footerlabel = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+        footerlabel.text = "No new news to load."
+        footerlabel.center = footerView.center
+        footerView.addSubview(footerlabel)
+
+        return footerView
+    }
 }
 
 extension NewsListViewController: UITableViewDataSource {
@@ -131,7 +163,7 @@ extension NewsListViewController: UITableViewDataSource {
         ) as? NewsTableViewCell else {
             fatalError()
         }
-        cell.configure(with: newsTableViewCellViewModels[indexPath.row])
+        cell.configure(with: newsTableViewCellViewModels[indexPath.row], newsTableViewCellViewModel:  newsTableViewCellViewModel)
         return cell
     }
 

@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import UIKit
 
 protocol NetworkManagerProtocol {
     func fetchNewsEnvelope(perPage: Int, sinceId: Int, completion: @escaping (Result<NewsEnvelope, APIError>) -> Void)
+    func fetchImageData(withURL url: URL, completion: @escaping (Result<UIImage, APIError>) -> Void)
 }
 
 struct NetworkManager: NetworkManagerProtocol {
@@ -42,6 +44,22 @@ struct NetworkManager: NetworkManagerProtocol {
                     let newsEnvelope = try JSONDecoder.customeDecoder.decode(NewsEnvelope.self, from: data)
                     completion(.success(newsEnvelope))
                 } catch {
+                    completion(.failure(.dataNotDecoded))
+                }
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchImageData(withURL url: URL, completion: @escaping (Result<UIImage, APIError>) -> Void) {
+
+        httpManager.getDataFor(url: url) { response in
+            switch response {
+            case  .success(let data):
+                if let imageData = UIImage(data: data) {
+                    completion(.success(imageData))
+                } else {
                     completion(.failure(.dataNotDecoded))
                 }
             case .failure(let error):
